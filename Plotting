@@ -1,0 +1,133 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+#x e y son los datos de la Tabla 4
+#xb e yb son los datos de la Tabla 5
+
+x = np. array ( [39100.75, 41100.75, 43100.75, 45100.75, 47100.75, 50100.75, 53100.75, 55100.75, 57100.75, 59100.75, 61100.75, 63100.75, 65100.75, 67100.75, 69100.75, 71100.75, 73100.75, 75100.75, 77100.75, 79100.75, 81100.75, 83100.75])
+y = np. array ( [471.8e-8, 458e-8,435.1e-8, 419.1e-8, 400.8e-8, 375.6e-8, 359.6e-8, 343.5e-8, 332.1e-8 , 322.9e-8, 311.5e-8, 304.6e-8, 293.1e-8, 286.3e-8, 279.4e-8, 270.2e-8, 263.4e-8, 256.5e-8, 249.6e-8, 245e-8, 240e-8, 236e-8])
+xb = np.array ([48100.75, 53100.75,	55100.75,	57100.75,	61100.75,	63100.75,	65100.75,	67100.75,	70100.75,	73100.75,	75100.75,	77100.75,	79100.75,	81100.75,	83100.75,	93100.75])
+yb = np.array ([403e-8,	366.4e-8,	350.4e-8,	339e-8,	322.9e-8,	311.5e-8,	300e-8,	293.1e-8,	281.7e-8,	263.3e-8,	261.1e-8,	251.9e-8,	247.3e-8,	245.1e-8,	238.2e-8,	220e-8])
+
+yb2 = []
+xb2 = []
+
+y2 = []
+x2 = []
+
+#Aplicamos el ln a ambos arrays de datos
+for i in range(len(x)):
+    y2.append(np.log((y[i])))
+    x2.append(np.log((x[i])))
+    
+for i in range(len(xb)):
+    yb2.append(np.log((yb[i])))
+    xb2.append(np.log((xb[i])))
+
+n = len(x)
+n1 = len(xb)
+#Creamos las variables donde almacenaremos los valores de las sumas
+
+suma_x1     = 0
+suma_y21    = 0
+suma_xix1   = 0
+suma_xiy21  = 0
+
+suma_xb1    = 0
+suma_yb1    = 0
+suma_xbixb1 = 0
+suma_xbiyb1 = 0
+
+for i in range( n ):     
+    #Luego realizamos la recta con ln(y) vs ln(x) 
+    suma_x1  += x2[i]
+    suma_y21  += y2[i]
+    suma_xix1 += x2[i]**2
+    suma_xiy21 += x2[i]*y2[i]
+
+for i in range( n1 ):
+    suma_xb1    += xb2[i]
+    suma_yb1    += yb2[i]
+    suma_xbixb1 += xb2[i]**2
+    suma_xbiyb1 += xb2[i]*yb2[i]
+
+#aplicado las formulas
+#Primera recta 
+
+#Segunda recta
+f = (n  * suma_xiy21      - suma_x1   * suma_y21) / (n * suma_xix1 - suma_x1**2)
+g = (suma_xix1 * suma_y21 - suma_xiy21 * suma_x1) / (n * suma_xix1 - suma_x1**2)
+
+k = (n1  * suma_xbiyb1      - suma_xb1   * suma_yb1) / (n1 * suma_xbixb1 - suma_xb1**2)
+q = (suma_xbixb1 * suma_yb1 - suma_xbiyb1 * suma_xb1) / (n1 * suma_xbixb1 - suma_xb1**2)
+
+#Linea recta aproximada
+H = f * np.array(x2) + g
+J = k * np.array(xb2) + q
+
+A = np.exp(g)
+C = A*x**f
+
+A_1 = np.exp(q)
+C_1 = A_1*xb**k
+
+t = np.linspace(39100, 100000)
+C_2=A*t**f
+C_3=A_1*t**k
+
+a = (8.314472)*(24.8+273.15)
+e = (A/a)*t**0
+i = (A_1/a)*t**0
+
+plt.plot(x2,y2,'o', color='gray', label='Ln(Datos experimentales)')
+plt.plot(x2,H,'k--', color='blue', label='Recta aproximada ln(A)={:.4f}, B={:.4f}'.format(g,f))
+plt.legend()
+plt. ylabel (r'$Ln( Volumen )$', size = 11)
+plt. xlabel (r'$Ln( Presión ) $', size = 11)
+plt.show()
+
+
+plt.plot(x,y,'o', color='gray', label='Datos experimentales')
+plt.plot(x,C,'k--', color='blue', label='Función aproximada. A={:.5f}, B={:.5f}'.format(A,f))
+plt.legend()
+plt. ylabel (r'$Volumen$', size = 11)
+plt. xlabel (r'$Presión$', size = 11)
+plt.show()
+
+plt.plot(xb2,yb2,'o', color='gray', label='Ln(Datos experimentales)')
+plt.plot(xb2,J,'k--', color='red', label='Recta aproximada ln(A)={:.4f}, B={:.4f}'.format(q,k))
+plt.legend()
+plt. ylabel (r'$Ln( Volumen )$', size = 11)
+plt. xlabel (r'$Ln( Presión ) $', size = 11)
+plt.show()
+
+plt.plot(xb,yb,'o', color='gray', label='Datos experimentales')
+plt.plot(xb,C_1,'k--', color='red', label='Función aproximada. $A_1$ ={:.5f}, $B_1$ ={:.5f}'.format(A_1,k))
+plt.legend()
+plt. ylabel (r'$Volumen$', size = 11)
+plt. xlabel (r'$Presión$', size = 11)
+plt.show()
+
+plt.plot(xb,yb,'o', color='darkgray', label='Datos experimentales (Tabla 5)')
+plt.plot(t,C_3,'k--', color='red', label='F. apróx. (Tab. 5) $A_1$ ={:.5f}, $B_1$ ={:.5f}'.format(A_1,k))
+plt.plot(x,y,'o', color='dimgrey', label='Datos experimentales (Tabla 4)')
+plt.plot(t,C_2,'k--', color='blue', label='F. apróx. (Tab. 4). A={:.5f}, B={:.5f}'.format(A,f))
+plt.legend()
+plt. ylabel (r'$Volumen$', size = 11)
+plt. xlabel (r'$Presión$', size = 11)
+plt.show()
+
+
+plt.plot(t,i,'k--', color='blue', label='$A_1/RT$')
+plt.plot(xb,(yb*(xb**(-k)))/a,'o', color='gray', label='$PV/RT$ (Tabla 5)')
+plt.legend(loc=0)
+plt. ylabel (r'$Volumen$', size = 11)
+plt. xlabel (r'$Presión$', size = 11)
+plt.show()
+
+plt.plot(t,e,'k--', color='red', label='$A/RT$')
+plt.plot(x,(y*(x**(-f)))/a,'o', color='gray', label='$PV/RT$ (Tabla 4)')
+plt.legend(loc=0)
+plt. ylabel (r'$Volumen$', size = 11)
+plt. xlabel (r'$Presión$', size = 11)
+plt.show()
